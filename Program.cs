@@ -16,8 +16,10 @@ namespace KylosNotify
             if (await service.LoginAsync())
             {
                 string X = await service.GetNewClassNotice();
+                
                 Console.WriteLine("Logged in");
-                Console.WriteLine(X);
+                
+                service.ParseHtml(X);
             }    
         }
     }

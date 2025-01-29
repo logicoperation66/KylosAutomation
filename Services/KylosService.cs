@@ -36,7 +36,6 @@ namespace KylosNotify.Services
 
             var response = await httpClient.PostAsync(loginUrl, loginData);
             Console.WriteLine("WTF");
-            Console.Write(response.StatusCode);
             return response.StatusCode == HttpStatusCode.OK;
         }
 
@@ -46,6 +45,38 @@ namespace KylosNotify.Services
             var response = await httpClient.GetAsync(requestUrl);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
+        }
+
+        public void ParseHtml(string html)
+        {
+            var doc = html;
+            HtmlDocument htmlDock = new HtmlDocument();
+            htmlDock.LoadHtml(doc);
+
+            string dateXpath = "//td[@class='norma' and contains(@style, 'font-size:13px')]";
+            string messageXpath = "//td[@class='norma' and contains(@style, 'font-size:15px')]//p";
+            
+            var dateNode = htmlDock.DocumentNode.SelectNodes(dateXpath);
+            var messageNode = htmlDock.DocumentNode.SelectNodes(messageXpath);
+
+            if (dateNode != null && messageNode != null && dateNode.Count == messageNode.Count)
+            {
+                for (int i = 0; i < messageNode.Count; i++)
+                {
+                    string dateText = dateNode[i].InnerText.Trim();
+                    
+                    string messageText = messageNode[i].InnerText.Trim();
+
+                    
+                    Console.WriteLine($"Data: {dateText}");
+                    Console.WriteLine($"Treść: {messageText}");
+                    Console.WriteLine(new string('-', 200));
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nie znaleziono danych");
+            }
 
         }
     }
